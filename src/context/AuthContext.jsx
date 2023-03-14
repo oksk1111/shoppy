@@ -9,10 +9,7 @@ export function AuthContextProvider({ children }) {
 
   useEffect(() => {
     // 이전 사용자 상태를 초기값으로 주자
-    onUserStateChange((user) => {
-      console.log(user);
-      setUser(user);
-    });
+    onUserStateChange((user) => setUser(user));
   }, []);
 
   return (

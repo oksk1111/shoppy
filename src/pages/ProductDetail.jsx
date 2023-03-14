@@ -1,24 +1,29 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
-import { useAuthContext } from "../context/AuthContext";
 import Button from "../components/ui/Button";
-import { addOrUpdateToCart } from "../api/firebase";
+import useCart from "../hooks/useCart";
 
 export default function ProductDetail() {
-  const { uid } = useAuthContext();
+  const { addOrUpdateItem } = useCart();
   // navigate()를 통해 전달한 인자는 useLocation()으로 받는다.
   const {
     state: {
       product: { id, image, title, description, category, price, options },
     },
   } = useLocation();
+  const [success, setSuccess] = useState();
   const [selected, setSelected] = useState(options && options[0]);
 
   const handleSelect = (e) => setSelected(e.target.value);
   const handleClick = (e) => {
     // 여기서 장바구니에 추가하면 됨!
     const product = { id, image, title, price, option: selected, quantity: 1 };
-    addOrUpdateToCart(uid, product);
+    addOrUpdateItem.mutate(product, { // (추적값, callback)
+      onSuccess: () => {
+        setSuccess("장바구니에 추가되었습니다.")
+        setTimeout(() => setSuccess(null), 3000)
+      }
+    }); 
   };
 
   // option에서 key를 자동 index로 주었는데, 동적생성되는 테이블이 아니므로 줘도 됨
@@ -49,6 +54,7 @@ export default function ProductDetail() {
                 ))}
             </select>
           </div>
+          {success && <p className="my-2">{success}</p>}
           <Button text="장바구니에 추가" onClick={handleClick} />
         </div>
       </section>

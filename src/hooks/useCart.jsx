@@ -6,6 +6,8 @@ export default function useCart() {
   const { uid } = useAuthContext();
   const queryClient = useQueryClient();
 
+  // 사용자별(uid)로 캐시 수행
+  // !! - 데이터의 T/F 변환은 그대로이나, 명시적으로 boolean으로 변경
   const cartQuery = useQuery(["carts", uid || ""], () => getCart(uid), {
     enabled: !!uid,
   });
@@ -14,7 +16,8 @@ export default function useCart() {
     (product) => addOrUpdateToCart(uid, product),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(["carts", uid]);
+        // [] 안의 조건이 맞을때만 invalidateQueries
+        queryClient.invalidateQueries(["carts", uid]); 
       },
     }
   );
